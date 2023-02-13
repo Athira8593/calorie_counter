@@ -33,21 +33,18 @@ class MealsRecord(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     food_item = models.ForeignKey(FoodItem, on_delete=models.CASCADE)
     amount_consumed = models.IntegerField()
+    total_calorie_consumed = models.IntegerField(blank=True, null=True)
 
-
+    
 class ActivityRecord(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-
     activity = models.ForeignKey(Activity, on_delete=models.CASCADE)
     duration = models.FloatField()
-
-
+    total_calorie_burned = models.IntegerField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
 class DailyRecord(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     date = models.DateField(auto_now_add=True)
+    consumption = models.ForeignKey(MealsRecord, on_delete=models.CASCADE)
+    burn_out = models.ForeignKey(ActivityRecord, on_delete=models.CASCADE)
 
-
-class FoodItemRecord(models.Model):
-    food_item = models.ForeignKey(FoodItem, on_delete=models.CASCADE)
-    daily_record = models.ForeignKey(DailyRecord, on_delete=models.CASCADE)
-    amount = models.FloatField()

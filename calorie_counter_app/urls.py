@@ -8,6 +8,7 @@ urlpatterns = [
     path('add-labels/', FoodItemLabelCreate.as_view(), name='add-labels'),
     path('add-activities/', ActivityCreate.as_view(), name='add-activities'),
     path('list-activities/', ActivityList.as_view(), name='list-activities'),
-    path('meals-records/', MealsRecordCreate.as_view(), name='meals-records'),
-    path('activity-records/', ActivityRecordCreate.as_view(),name='activity-records'),
+    path('meals-records/', MealsRecordListCreate.as_view(), name='meals-records'),
+    path('activity-records/', ActivityRecordListCreate.as_view(),name='activity-records'),
+    
 ]
