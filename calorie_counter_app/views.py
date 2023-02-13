@@ -1,6 +1,7 @@
 from django.shortcuts import render
+from rest_framework import generics
+from rest_framework.permissions import IsAdminUser, IsAuthenticated
 
-# Create your views here.
 from rest_framework import viewsets, permissions
 from django.contrib.auth.models import User
 from .models import FoodItem, FoodItemLabel, Activity, DailyRecord, FoodItemRecord, ActivityRecord
@@ -8,7 +9,6 @@ from .serializers import *
 from rest_framework.generics import CreateAPIView
 from rest_framework.views import APIView
 from django.contrib.auth import authenticate
-from rest_framework.permissions import IsAuthenticated
 
 # from django.http import HTTP_400_BAD_REQUEST
 from rest_framework.response import Response
@@ -21,63 +21,81 @@ from django.db.models.functions import ExtractMonth, ExtractYear
 
 
 
-class FoodItemViewSet(viewsets.ModelViewSet):
+class FoodItemCreate(generics.ListCreateAPIView):
     queryset = FoodItem.objects.all()
     serializer_class = FoodItemSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAdminUser]
     def perform_create(self,serializer):
         serializer.save(created=self.request.user)
         if self.request.user.is_staff:
             serializer.save(is_global = True,approved_by_admin = True)
         else:
             serializer.save(is_global = False,approved_by_admin = False)
-
-class FoodItemLabelViewSet(viewsets.ModelViewSet):
+    
+class FoodItemLabelCreate(generics.ListCreateAPIView):
     queryset = FoodItemLabel.objects.all()
     serializer_class = FoodItemLabelSerializer
-    permission_classes = [permissions.IsAuthenticated]
-
-class ActivityViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAdminUser] 
+    
+class ActivityCreate(generics.ListCreateAPIView):
     queryset = Activity.objects.all()
     serializer_class = ActivitySerializer
-    permission_classes = [permissions.IsAuthenticated]
-
+    permission_classes = [IsAuthenticated]
     def perform_create(self,serializer):
         serializer.save(created=self.request.user)
+        
         if self.request.user.is_staff:
             serializer.save(is_global = True,approved_by_admin = True)
         else:
             serializer.save(is_global = False,approved_by_admin = False)
-
-class DailyRecordViewSet(viewsets.ModelViewSet):
+            
+class DailyRecordCreate(generics.ListCreateAPIView):
     queryset = DailyRecord.objects.all()
     serializer_class = DailyRecordSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAuthenticated]
     
-class FoodItemRecordViewSet(viewsets.ModelViewSet):
+    
+    
+# class FoodItemRecordCreate(generics.ListCreateAPIView):
+#     queryset = FoodItemRecord.objects.all()
+#     serializer_class = FoodItemRecordSerializer
+#     permission_classes = [permissions.IsAuthenticated]
+
+#     def perform_create(self, serializer):
+#         try:
+#             daily_record = DailyRecord.objects.get(date=timezone.now().date(), user=self.request.user)
+#         except DailyRecord.DoesNotExist:
+#             daily_record = DailyRecord.objects.create(date=timezone.now().date(), user=self.request.user)
+#         serializer.save(daily_record=daily_record,user=self.request.user)
+
+class FoodItemRecordCreate(generics.ListCreateAPIView):
     queryset = FoodItemRecord.objects.all()
     serializer_class = FoodItemRecordSerializer
     permission_classes = [permissions.IsAuthenticated]
 
     def perform_create(self, serializer):
+        food_item = FoodItem.objects.get(id=self.request.data.get('food_item'))
         try:
             daily_record = DailyRecord.objects.get(date=timezone.now().date(), user=self.request.user)
         except DailyRecord.DoesNotExist:
             daily_record = DailyRecord.objects.create(date=timezone.now().date(), user=self.request.user)
-        serializer.save(daily_record=daily_record,user=self.request.user)
+        serializer.save(daily_record=daily_record, food_item=food_item.id)
+    
+    
+class ActivityRecordCreate(generics.ListCreateAPIView):
+    queryset = Activity.objects.all()
+    serializer_class = ActivitySerializer
+    permission_classes = [IsAuthenticated]
 
+    def perform_create(self,serializer):
+        serializer.save(created=self.request.user)
+        if self.request.user.is_staff:
+            serializer.save(is_global = True,approved_by_admin = True)
+        else:
+            serializer.save(is_global = False,approved_by_admin = False)
+    
+    
 
-class ActivityRecordViewSet(viewsets.ModelViewSet):
-    queryset = ActivityRecord.objects.all()
-    serializer_class = ActivityRecordSerializer
-    permission_classes = [permissions.IsAuthenticated]
-
-    def perform_create(self, serializer):
-        try:
-            daily_record = DailyRecord.objects.get(date=timezone.now().date(), user=self.request.user)
-        except DailyRecord.DoesNotExist:
-            daily_record = DailyRecord.objects.create(date=timezone.now().date(), user=self.request.user)
-        serializer.save(daily_record=daily_record,user=self.request.user)
 
 class FoodItemRecordView(APIView):
     permission_classes = [permissions.IsAuthenticated]    

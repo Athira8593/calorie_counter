@@ -31,7 +31,7 @@ class Activity(models.Model):
 
 class DailyRecord(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    date = models.DateField()
+    date = models.DateField(auto_now_add=True)
 
 class FoodItemRecord(models.Model):
     food_item = models.ForeignKey(FoodItem, on_delete=models.CASCADE)

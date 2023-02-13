@@ -20,6 +20,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('user_app.api.urls')),
     path('api/', include('calorie_counter_app.urls'))
-
 ]
 
