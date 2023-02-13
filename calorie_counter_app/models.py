@@ -18,7 +18,6 @@ class FoodItem(models.Model):
     approved_by_admin = models.BooleanField(blank=True,null=True)
     
 class FoodItemLabel(models.Model):
-    '''Carbohydrates,Fat,Protein'''
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=255)
 
