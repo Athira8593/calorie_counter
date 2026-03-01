@@ -35,7 +35,6 @@ class FoodItemCreate(generics.CreateAPIView):
 class FoodItemList(generics.ListAPIView):
     queryset = FoodItem.objects.filter(approved_by_admin=True)
     serializer_class = FoodItemSerializer
-    permission_classes = [IsAuthenticated]
 
 
 class FoodItemLabelCreate(generics.ListCreateAPIView):
