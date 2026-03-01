@@ -21,7 +21,7 @@ from django.db.models.functions import ExtractMonth, ExtractYear
 class FoodItemCreate(generics.CreateAPIView):
     queryset = FoodItem.objects.all()
     serializer_class = FoodItemSerializer
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
 
     def perform_create(self, serializer):
         serializer.save(created=self.request.user)
